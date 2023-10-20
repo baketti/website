@@ -5,7 +5,7 @@ const indexRouter = require('./routes/index');
 const authorRouter = require('./routes/authors')
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser')
-mongoose.connect("mongodb+srv://dbApp:dbapp@cluster0.9rogpvu.mongodb.net/");
+//mongoose.connect("mongodb+srv://dbApp:dbapp@cluster0.9rogpvu.mongodb.net/");
 const db = mongoose.connection;
 db.on('error', error=>console.error(error));
 db.once('open',()=>console.log('Connected to Mongoose!'))

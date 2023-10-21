@@ -3,22 +3,26 @@ const router = express.Router();
 const Author = require('../models/author.js');
 //tutte le rotte dell'autore => CONTROLLER AUTHOR
 router.get('/', async (req,res)=>{
+    console.log('siamo nel router.get /authors')
     let searchOptions = {};
     if (req.query.name != null && req.query.name !== ''){
         searchOptions.name = new RegExp(req.query.name,'i')//i = case insensitive
     }
     try{
-        const authors = await Author.find(searchOptions)
+        console.log('nel try')
+        const authors = await Author.find(searchOptions);
         res.render('authors/index', {
             authors:authors,
             searchOptions:req.query
         })
     }catch{
+        console.log('nel catch')
         res.redirect('/',)
     }
 })
 // rotta nuovo autore
 router.get('/new',(req,res)=>{
+    console.log('siamo in authors/new')
     res.render('authors/new', { author: new Author() })
 })
 //rotta per creare l'autore

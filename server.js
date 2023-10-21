@@ -1,11 +1,14 @@
 const express = require('express');//
 const app = express();
 const expressLayouts = require('express-ejs-layouts');
+
 const indexRouter = require('./routes/index');
-const authorRouter = require('./routes/authors')
+const authorRouter = require('./routes/authors');
+const bookRouter = require('./routes/books');
+
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser')
-//mongoose.connect("mongodb+srv://dbApp:dbapp@cluster0.9rogpvu.mongodb.net/");
+mongoose.connect("mongodb+srv://dbApp:dbapp@cluster0.9rogpvu.mongodb.net/");
 const db = mongoose.connection;
 db.on('error', error=>console.error(error));
 db.once('open',()=>console.log('Connected to Mongoose!'))
@@ -19,5 +22,6 @@ app.use(bodyParser.urlencoded({ limit:'10mb', extended:false }))
 
 
 app.use('/', indexRouter);
-app.use('/authors',authorRouter)
+app.use('/authors',authorRouter);
+app.use('/books',bookRouter);
 app.listen(process.env.PORT || 3000);

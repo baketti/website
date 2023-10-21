@@ -1,1 +1,6 @@
-questo è il contenuto che si inserisce nella parte body di layout.ejs  
+<h2>Recently Added</h2>
+<div>
+    <% books.forEach(book => { %>
+        <img src="<%= book.coverImagePath  %>" alt="" height="150" width="100">
+    <% }) %>
+</div>

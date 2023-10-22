@@ -1,22 +1,9 @@
 const express = require('express');
 const router = express.Router();
-const multer = require('multer');
-const path = require('path');
-const fs = require('fs')
 const Book = require('../models/book');
-
-const uploadPath = 'public/uploads/bookCovers'
-//const uploadPath = path.join('public', Book.coverImageBasePath)
 const Author = require('../models/author');
+const imageMimeTypes = ['image/jpeg','image/png','image/gif']
 
-
-const imageMimeTypes = ['images/jpeg','images/png','images/gif']
-const upload = multer({
-    dest: uploadPath,
-    fileFilter: (req,file,callback)=>{
-        callback(null,imageMimeTypes.includes(file.mimetype))
-    }
-});
 //tutte le rotte dei books => CONTROLLER BOOK
 router.get('/', async (req,res)=>{
     let query = Book.find();
@@ -45,38 +32,26 @@ router.get('/new',async (req,res)=>{
     renderNewPage(res,new Book())
 })
 //rotta per creare book
-router.post('/', upload.single('cover'),async (req,res)=>{
-    console.log('siamo nel post /books')
-    const fileName = req.file != null ? req.file.filename : null;
+router.post('/',async (req,res)=>{
     const book = new Book({
         title: req.body.title,
         author: req.body.author,
         publishDate: new Date(req.body.publishDate),
         pageCount: req.body.pageCount,
-        coverImageName: fileName,
         description: req.body.description
     })
+        saveCover(book, req.body.cover)
     try{
         console.log('nel try del post')
         const newBook = await book.save();
         //res.redirect(`books/${newbook.id}`)
         res.redirect('books')
-        console.log('res.redirect("books") eseguito!')
     }catch{
         console.log('nel catch del post')
-        if(book.coverImageName != null){
-            removeBookCover(book.coverImageName)
-        }
         renderNewPage(res,book,true)
-        console.log('renderNewPage(res,book,true) eseguito')
     }
 })
 
-function removeBookCover(fileName){
-    fs.unlink(path.join(uploadPath, fileName), err =>{
-        if(err) console.error(err);
-    })
-}
 async function renderNewPage(res, book, hasError = false){
     try{
         console.log('try renderNewPage')
@@ -85,15 +60,19 @@ async function renderNewPage(res, book, hasError = false){
             authors: authors,
             book: book
         }
-        console.log('if hasError nel try renderNewPage')
         if(hasError) params.errorMessage = 'Error Creating Book';
-        console.log('dopo if hasError nel try renderNewPage')
         res.render('books/new', params)
-        console.log('res.render(books/new) nel try renderNewPage ESEGUITO')
     }catch{
-        console.log('catch renderNewPage')
         res.redirect('/books')
     }
 }
 
+function saveCover(book, coverEncoded) {
+    if (coverEncoded == null) return
+    const cover = JSON.parse(coverEncoded)
+    if (cover != null && imageMimeTypes.includes(cover.type)) {
+      book.coverImage = new Buffer.from(cover.data, 'base64')
+      book.coverImageType = cover.type 
+    }
+  }
 module.exports = router ;

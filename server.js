@@ -2,7 +2,7 @@ const express = require('express');//
 const app = express();
 const expressLayouts = require('express-ejs-layouts');
 const path = require('path');
-
+ 
 const indexRouter = require('./routes/index');
 const authorRouter = require('./routes/authors');
 const bookRouter = require('./routes/books');
@@ -10,6 +10,7 @@ const bookRouter = require('./routes/books');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser')
 const methodOverride = require('method-override')
+//mongoose.connect("")
 const db = mongoose.connection;
 db.on('error', error=>console.error(error));
 db.once('open',()=>console.log('Connected to Mongoose!'))
